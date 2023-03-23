@@ -1,5 +1,5 @@
 # This is the Writeup of Perfect Synchronization challenge on Hack The Box Cyber Apocaplypse 2023
-So this challenge begins with 2 given files: [output.txt]() and [source.py](). In the output.txt we can see around 1500 lines of gibberish and in the source.py 
+So this challenge begins with 2 given files: [output.txt](https://github.com/mateusz7988/CTF-Writeups/blob/main/CyberApocalypse2023/PerfectSynchronization/output.txt) and [source.py](https://github.com/mateusz7988/CTF-Writeups/blob/main/CyberApocalypse2023/PerfectSynchronization/source.py). In the output.txt we can see around 1500 lines of gibberish and in the source.py 
 we are given the source code that this encryption has used. Let's focus on the source.py file:
 
 
