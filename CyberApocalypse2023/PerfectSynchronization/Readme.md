@@ -47,32 +47,47 @@ So, I focused on **AES.MODE_ECB**. After a short research I was able to find thi
     which allows a possible attacker to disclose patterns in our ciphered messages
 
 
-Bingo! This basically means that if we have for example letter "a" it will always be encoded as for example "dfc8a2232dc2487a5455bda9fa2d45a1", the same goes for
-"b" being for example "c87a7eb9283e59571ad0cb0c89a74379" and so on. If you take a look at the file **output.txt** you will see that there are indeed repeating patterns
-of characters. Try this combination in SublimeText: **ctrl + alt + H**. It will find all the occurences of the value and change them for the value of your choice.
-So what we need to do, is to find all occurrences of "dfc8a2232dc2487a5455bda9fa2d45a1" and count them, then find all occurrences of "305d4649e3cb097fb094f8f45abbf0dc"
-and count them and so on and so on... Of course we will use a simple script that will do this for us (the **output.txt** is 1500 lines long!!). For our purpose I wrote this script:
+Bingo! This basically means that if we have for example letter "a" it will always be encoded as for example "dfc8a2232dc2487a5455bda9fa2d45a1", the same goes for "b" being for example "c87a7eb9283e59571ad0cb0c89a74379" and so on. If you take a look at the file **output.txt** you will see that there are indeed repeating patterns of characters. Try this combination in SublimeText: **ctrl + alt + H**. It will find all the occurences of the value and change them for the value of your choice. So what we need to do, is to find all occurrences of "dfc8a2232dc2487a5455bda9fa2d45a1" and count them, then find all occurrences of "305d4649e3cb097fb094f8f45abbf0dc" and count them and so on and so on... Of course we will use a simple script that will do this for us (the **output.txt** is 1500 lines long!!). For our purpose I wrote this script:
 
 
+    data = open("output.txt", 'r').readlines()
+    lista = []
+    db = {}
+    for item in data:
+        lista.append(item)
 
-    insert script here later
+    while True:
+        if len(lista) == 0:
+            break
+        else:
+            i = 0
+            number = data.count(lista[i])
+            db[lista[i].strip("\n")] = number
+
+            lista.remove(lista[i])
+
+    db = sorted(db.items(), key=lambda x:x[1], reverse=True) #sort dictionary in the descending order
+
+    print(db)
+
+    
+**_I KNOW THIS SCRIPT COULD BE WRITTEN BETTER BUT IT WAS JUST A QUICK SOLLUTION IN WHICH I DIDN'T INVEST TOO MUCH TIME - SORRY NOT SORRY PYTHON FREAKS LOL_**
+
+**_ALSO I KNOW THIS SCRIPT THINKS THAT THE "c87a7eb9283e59571ad0cb0c89a74379" OCCURRS ONLY ONCE, WHICH IS OBVIOUSLY AN ERROR, IDK WHY THIS HAPPENED BUT I WAS ABLE TO SUBSTITUTE THE RIGHT LETTERS ANYWAY_**
+
+Now, when the script counted all of the occurrences of encoded values, we can try the letter substitution method later. I found the list of the most common letters in english alphabet which i will substitute for the most common values in **output.txt** later on. I also knew that flag that I need to find is in format **_HTB{flag_that_i_need_to_find}_**, so I knew that in my **output.txt** there should be at least one occurence of "{" character and "}" character. I also knew that 3 letters before the "{" character will be the **"HTB"** letters. This is something to work with! My script found that there was only 1 occurrence of the "fbe86a428051747607a35b44b1a3e9e9" value on line 1099 (which I supposed will be the "{") and only 1 occurrence of the "c53ba24fbbe9e3dbdd6062b3aab7ed1a" on line 1129 of **output.txt** (which I supposed will be the "}"). Hmmm... This looks like a flag! Now I started to substitute the most common occurrences of the values from **output.txt** file with the most common english letters. Inside of the "{...}" I decided to write some "_" characters (which are very typical for the flag format) in the places that looked suspicious. After a while in the lines 1050 - 1250 of **output.txt** I got this:
+
+
+    TEULPSONSFEISMEROIONRONUICEISICHRNREFASATICCHE**DOW{I_RNKBCA_RPWRONOPONLS_NR_VAIX}**EUITMEOHBAEKIUDNSATHEVATAEGNTROEPRAMENSEVLT
+    CMEVITENNEBLRRNWCHEWHEODAEPREITKHRERNREOLMIHEODAEDITMEVLTXELGECAOOATEULPSONSFE
+    
+
+Well now it looks unappealing, but after pasting this output to the quipqiup online tool (which was given in the description of the challenge) and giving it hint that **DOW=HTB** (we know this because the 3 letters before the "{" character are "HTB"), quipqiup was able to produce output like this using the solve(dictionary) method:
+
+
+    ???OUNTIN??AN??STATISTI?AL?ANAL?SIS??ENE?ALL??**HTB{A_SIMPLE_SUBSTITUTION_IS_WEAK}**??A???T?PE?MA?HINE???WE?E??I?ST?USE??IN?WO?L?
+    ?WA??II?POSSIBL??B??THE?US?A?M?S?SIS?TO?A??THE?HA???WO?K?O??LETTE???OU
     
 
 
-Now, when the script counted all of the occurrences of encoded values, we can try the letter substitution method. I found the list of the most common letters in english alphabet and substituded them for the most common values in **output.txt**. I also knew that flag that I need to find is in format
-**_HTB{flag_that_i_need_to_find}_**, so I knew that in my **output.txt** there should be at least one occurence of "{" character and "}" character. I also knew that 3 letters before the "{" character will be the **HTB** letters. This is something to work with! My script found that there was only 1 occurrence of the ">insert later<" value on line 1099 and only 1 occurrence of the ">insert later<" on line 1129 of **output.txt**. Hmmm... This looks like a flag! Now I started to substitute the most common occurrences of the **output.txt** file with the most common english letters. After a while in the lines 1050 - 1250 of **output.txt** I got this:
-
-
-
-    insert partly decoded message here
-    
-
-Well now it looks unappealing, but after pasting this output to the quipqiup online tool (which was given in the description of the challenge) and giving it hint that **insert here the hint**(we know this because the 3 letters before the "{" character are "HTB"), it was able to produce output like this:
-
-
-
-    insert here the quipqiup output
-    
-
-
-Here we can easily see that our flag is: **_insert flag here_**
+Here we can easily see that our flag is: **_HTB{SIMPLE_SUBSTITUTION_IS_WEAK}_**
