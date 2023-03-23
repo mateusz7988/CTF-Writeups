@@ -3,39 +3,39 @@ So this challenge begins with 2 given files: [output.txt](https://github.com/mat
 we are given the source code that this encryption has used. Let's focus on the source.py file:
 
 
-    ```python
+```python
 
-    from os import urandom
-    from Crypto.Cipher import AES
-    from secret import MESSAGE
+from os import urandom
+from Crypto.Cipher import AES
+from secret import MESSAGE
 
-    assert all([x.isupper() or x in '{_} ' for x in MESSAGE])
-
-
-    class Cipher:
-
-        def __init__(self):
-            self.salt = urandom(15)
-            key = urandom(16)
-            self.cipher = AES.new(key, AES.MODE_ECB)
-
-        def encrypt(self, message):
-            return [self.cipher.encrypt(c.encode() + self.salt) for c in message]
+assert all([x.isupper() or x in '{_} ' for x in MESSAGE])
 
 
-    def main():
-        cipher = Cipher()
-        encrypted = cipher.encrypt(MESSAGE)
-        encrypted = "\n".join([c.hex() for c in encrypted])
+class Cipher:
 
-        with open("output.txt", 'w+') as f:
-            f.write(encrypted)
+    def __init__(self):
+        self.salt = urandom(15)
+        key = urandom(16)
+        self.cipher = AES.new(key, AES.MODE_ECB)
+
+    def encrypt(self, message):
+        return [self.cipher.encrypt(c.encode() + self.salt) for c in message]
 
 
-    if __name__ == "__main__":
-        main()
-        
-    ```
+def main():
+    cipher = Cipher()
+    encrypted = cipher.encrypt(MESSAGE)
+    encrypted = "\n".join([c.hex() for c in encrypted])
+
+    with open("output.txt", 'w+') as f:
+        f.write(encrypted)
+
+
+if __name__ == "__main__":
+    main()
+
+```
 
 
 There were 2 things that were interesting for me: **key = urandom(16)** and **self.cipher = AES.new(key, AES.MODE_ECB)**. After searching for a while, I found that
@@ -53,29 +53,29 @@ Bingo! This basically means that if we have for example letter "a" it will alway
 
 
 
-    ``` python
-    
-    data = open("output.txt", 'r').readlines()
-    lista = []
-    db = {}
-    for item in data:
-        lista.append(item)
+``` python
 
-    while True:
-        if len(lista) == 0:
-            break
-        else:
-            i = 0
-            number = data.count(lista[i])
-            db[lista[i].strip("\n")] = number
+data = open("output.txt", 'r').readlines()
+lista = []
+db = {}
+for item in data:
+    lista.append(item)
 
-            lista.remove(lista[i])
+while True:
+    if len(lista) == 0:
+        break
+    else:
+        i = 0
+        number = data.count(lista[i])
+        db[lista[i].strip("\n")] = number
 
-    db = sorted(db.items(), key=lambda x:x[1], reverse=True) #sort dictionary in the descending order
+        lista.remove(lista[i])
 
-    print(db)
-    
-    ```
+db = sorted(db.items(), key=lambda x:x[1], reverse=True) #sort dictionary in the descending order
+
+print(db)
+
+```
 
     
 **_I KNOW THIS SCRIPT COULD BE WRITTEN BETTER BUT IT WAS JUST A QUICK SOLLUTION IN WHICH I DIDN'T INVEST TOO MUCH TIME - SORRY NOT SORRY PYTHON FREAKS LOL_**
