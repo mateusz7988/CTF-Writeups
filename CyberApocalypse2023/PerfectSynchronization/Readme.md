@@ -3,7 +3,7 @@ So this challenge begins with 2 given files: [output.txt](https://github.com/mat
 we are given the source code that this encryption has used. Let's focus on the source.py file:
 
 
-    '''python
+    ```python
 
     from os import urandom
     from Crypto.Cipher import AES
@@ -35,7 +35,7 @@ we are given the source code that this encryption has used. Let's focus on the s
     if __name__ == "__main__":
         main()
         
-    '''
+    ```
 
 
 There were 2 things that were interesting for me: **key = urandom(16)** and **self.cipher = AES.new(key, AES.MODE_ECB)**. After searching for a while, I found that
@@ -53,7 +53,7 @@ Bingo! This basically means that if we have for example letter "a" it will alway
 
 
 
-    ''' python
+    ``` python
     
     data = open("output.txt", 'r').readlines()
     lista = []
@@ -75,7 +75,7 @@ Bingo! This basically means that if we have for example letter "a" it will alway
 
     print(db)
     
-    '''
+    ```
 
     
 **_I KNOW THIS SCRIPT COULD BE WRITTEN BETTER BUT IT WAS JUST A QUICK SOLLUTION IN WHICH I DIDN'T INVEST TOO MUCH TIME - SORRY NOT SORRY PYTHON FREAKS LOL_**
