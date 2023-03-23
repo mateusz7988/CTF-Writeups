@@ -3,6 +3,7 @@ So this challenge begins with 2 given files: [output.txt](https://github.com/mat
 we are given the source code that this encryption has used. Let's focus on the source.py file:
 
 
+    '''python
 
     from os import urandom
     from Crypto.Cipher import AES
@@ -33,7 +34,8 @@ we are given the source code that this encryption has used. Let's focus on the s
 
     if __name__ == "__main__":
         main()
-    
+        
+    '''
 
 
 There were 2 things that were interesting for me: **key = urandom(16)** and **self.cipher = AES.new(key, AES.MODE_ECB)**. After searching for a while, I found that
@@ -47,9 +49,12 @@ So, I focused on **AES.MODE_ECB**. After a short research I was able to find thi
     which allows a possible attacker to disclose patterns in our ciphered messages
 
 
-Bingo! This basically means that if we have for example letter "a" it will always be encoded as for example "dfc8a2232dc2487a5455bda9fa2d45a1", the same goes for "b" being for example "c87a7eb9283e59571ad0cb0c89a74379" and so on. If you take a look at the file **output.txt** you will see that there are indeed repeating patterns of characters. Try this combination in SublimeText: **ctrl + alt + H**. It will find all the occurences of the value and change them for the value of your choice. So what we need to do, is to find all occurrences of "dfc8a2232dc2487a5455bda9fa2d45a1" and count them, then find all occurrences of "305d4649e3cb097fb094f8f45abbf0dc" and count them and so on and so on... Of course we will use a simple script that will do this for us (the **output.txt** is 1500 lines long!!). For our purpose I wrote this script:
+Bingo! This basically means that if we have for example letter "a" it will always be encoded as for example "dfc8a2232dc2487a5455bda9fa2d45a1", the same goes for "b" being for example "c87a7eb9283e59571ad0cb0c89a74379" and so on. If you take a look at the file **output.txt** you will see that there are indeed repeating patterns of characters. Try this combination in SublimeText: **ctrl + alt + H**. It will find all the occurences of the value and change them for the value of your choice. So what we need to do, is to find all occurrences of "dfc8a2232dc2487a5455bda9fa2d45a1" and count them, then find all occurrences of "305d4649e3cb097fb094f8f45abbf0dc" and count them and so on and so on... Of course we will use a simple script that will do this for us (the **output.txt** is 1500 lines long!!). For our purpose I wrote this script in python:
 
 
+
+    ''' python
+    
     data = open("output.txt", 'r').readlines()
     lista = []
     db = {}
@@ -69,6 +74,8 @@ Bingo! This basically means that if we have for example letter "a" it will alway
     db = sorted(db.items(), key=lambda x:x[1], reverse=True) #sort dictionary in the descending order
 
     print(db)
+    
+    '''
 
     
 **_I KNOW THIS SCRIPT COULD BE WRITTEN BETTER BUT IT WAS JUST A QUICK SOLLUTION IN WHICH I DIDN'T INVEST TOO MUCH TIME - SORRY NOT SORRY PYTHON FREAKS LOL_**
