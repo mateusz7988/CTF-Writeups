@@ -38,15 +38,12 @@ if __name__ == "__main__":
 ```
 
 
-There were 2 things that were interesting for me: **key = urandom(16)** and **self.cipher = AES.new(key, AES.MODE_ECB)**. After searching for a while, I found that
-function **urandom(16)** basically returns the 16 bytes long key which is the equivalent of 128 bits which is the equivalent of AES-128 encryption.
-AES-128 encryption is a very strong one and would take about **one billion years** to break, so the bruteforcing of this message was not even an option.
-So, I focused on **AES.MODE_ECB**. After a short research I was able to find this information:
+There were 2 things that were interesting for me: **key = urandom(16)** and **self.cipher = AES.new(key, AES.MODE_ECB)**. After searching for a while, I found that function **urandom(16)** basically returns the 16 bytes long key which is the equivalent of 128 bits which is the equivalent of AES-128 encryption. AES-128 encryption is a very strong one and would take about **one billion years** to break, so the bruteforcing of this message was not even an option. So, I focused on **AES.MODE_ECB**. After a short research I was able to find this information:
 
 
 
-    In terms of security, ECB is generally a bad choice since identical plain text blocks are encrypted to identical cipher text blocks, 
-    which allows a possible attacker to disclose patterns in our ciphered messages
+    In terms of security, ECB is generally a bad choice since identical plain text blocks are encrypted to identical 
+    cipher text blocks, which allows a possible attacker to disclose patterns in our ciphered messages
 
 
 Bingo! This basically means that if we have for example letter "a" it will always be encoded as for example "dfc8a2232dc2487a5455bda9fa2d45a1", the same goes for "b" being for example "c87a7eb9283e59571ad0cb0c89a74379" and so on. If you take a look at the file **output.txt** you will see that there are indeed repeating patterns of characters. Try this combination in SublimeText: **ctrl + alt + H**. It will find all the occurences of the value and change them for the value of your choice. So what we need to do, is to find all occurrences of "dfc8a2232dc2487a5455bda9fa2d45a1" and count them, then find all occurrences of "305d4649e3cb097fb094f8f45abbf0dc" and count them and so on and so on... Of course we will use a simple script that will do this for us (the **output.txt** is 1500 lines long!!). For our purpose I wrote this script in python:
