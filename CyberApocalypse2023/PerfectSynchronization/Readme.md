@@ -38,7 +38,7 @@ if __name__ == "__main__":
 ```
 
 
-There were 2 things that were interesting for me: **key = urandom(16)** and **self.cipher = AES.new(key, AES.MODE_ECB)**. After searching for a while, I found that function **urandom(16)** basically returns the 16 bytes long key which is the equivalent of 128 bits which is the equivalent of AES-128 encryption. AES-128 encryption is a very strong one and would take about **one billion years** to break, so the bruteforcing of this message was not even an option. So, I focused on **AES.MODE_ECB**. After a short research I was able to find this information:
+There were 2 things that were interesting for me: **key = urandom(16)** and **self.cipher = AES.new(key, AES.MODE_ECB)**. After searching for a while, I found that function **urandom(16)** basically returns the random 16 bytes long key which is the equivalent of 128 random bits which is the equivalent of AES-128 encryption. AES-128 encryption is a very strong one and would take about **one billion years** to break, so the bruteforcing of this message was not even an option. So, I focused on **AES.MODE_ECB**. After a short research I was able to find this information:
 
 
 
