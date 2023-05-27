@@ -141,7 +141,7 @@ def recursive_replace(search, replace_me, with_me):
         return search
     return recursive_replace(search.replace(replace_me, with_me), replace_me, with_me)
 ```
-In [utils.py](https://github.com/mateusz7988/CTF-Writeups/blob/main/HackTheBox/OpenSource/utils.py), we can see that function for getting unique filename is not implemented yet. This means, that if we upload something called Test.txt, it will still be called Test.txt after being uploaded. This kind of lazy writing is something that we will be able to exploit! Upon further inspecting of [views.py](https://github.com/mateusz7988/CTF-Writeups/blob/main/HackTheBox/OpenSource/views.py) file, we can see that the function used for crafting the path, where uploaded file should be stored, is using the os.path.join(). It turns out, that os.path.join() has a **FATAL** vulnerability that will come in handy this time!
+In [utils.py](https://github.com/mateusz7988/CTF-Writeups/blob/main/HackTheBox/OpenSource/utils.py), we can see that function for getting unique filename is not implemented yet. This means, that if we upload something called Test.txt, it will still be called Test.txt after being uploaded. This kind of lazy coding is something that we will be able to exploit! Upon further inspecting of [views.py](https://github.com/mateusz7988/CTF-Writeups/blob/main/HackTheBox/OpenSource/views.py) file, we can see that the function used for crafting the path, where uploaded file should be stored, is using the os.path.join(). It turns out, that os.path.join() has a **FATAL** vulnerability that will come in handy this time!
 It is using our filename for crafting the path to the file, but if the filename starts with "/", it makes the filepath start from the root filesystem:
 ```python 
 >>> import os
