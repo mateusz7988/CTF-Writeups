@@ -1,4 +1,4 @@
-# This is the Writeup of OpenSource machine on Hack The Box
+# This is the Writeup of the HackTheBox machine "OpenSource"
 
 So the first thing that we have to do is of course nmap scan. The output is shown below:
 ```# Nmap 7.93 scan initiated Fri May 26 15:34:39 2023 as: nmap -sV -Pn -sC -v -p- -oN scan 10.10.11.164
