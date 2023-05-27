@@ -65,7 +65,7 @@ PORT     STATE    SERVICE VERSION
 [...]
 Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
 ```
-As we can see, there are 3 ports open: 22, 80 and 3000. 22 and 80 are standard ports for SSH and HTTP, but on port 3000 there is a service running that we don't really know yet. So the natural thing to do now would be to scan the website for hidden directories or subdomains. We know there are no subdomains as the IP address of the machine (10.10.11.164) does not resolve to any domain name, thuss it doesn't have any subdomains. After using gobuster to scan site for hidden directories, it doesn't show anything useful. After playing with the site for a while we are able to download the source code and find a place to upload our files. The source code of [views.py](https://github.com/mateusz7988/CTF-Writeups/blob/main/HackTheBox/OpenSource/views.py) looks like this:
+As we can see, there are 3 ports open: 22, 80 and 3000. 22 and 80 are standard ports for SSH and HTTP, but on port 3000 there is a service running, that we don't really know yet. So, the natural thing to do now, would be to scan the website for hidden directories or subdomains. We know there are no subdomains as the IP address of the machine (10.10.11.164) does not resolve to any domain name, thuss it doesn't have any subdomains. After using gobuster to scan site for hidden directories, it doesn't show anything useful. After playing with the site for a while, we are able to download the source code and find a place to upload our files. The source code of [views.py](https://github.com/mateusz7988/CTF-Writeups/blob/main/HackTheBox/OpenSource/views.py) looks like this:
 ```python
 import os
 
