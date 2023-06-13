@@ -4,7 +4,7 @@ Well hello there! I just finished another HackTheBox machine called "GoodGames" 
 
 The challenge obviously starts with doing an nmap scan. For this, I really like to use this command : `nmap -sV -Pn -sC -v -p- -oN scan 10.10.11.130` as `-sV` enables version detection, `-Pn` disables host discovery and treats all hosts as online, `-sC` enables script scanning using the default set of Nmap scripts, `-v` makes the output more verbose, `-p-` indicates that all ports will be scanned and `-oN scan` specifies the format and location for the output (that in this case is called "scan").
 
-`Nmap scan report for 10.10.11.130
+```Nmap scan report for 10.10.11.130
 Host is up (0.023s latency).
 Not shown: 65534 closed tcp ports (conn-refused)
 PORT   STATE SERVICE VERSION
@@ -14,7 +14,7 @@ PORT   STATE SERVICE VERSION
 |_http-title: GoodGames | Community and Store
 |_http-favicon: Unknown favicon MD5: 61352127DC66484D3736CACCF50E7BEB
 |_http-server-header: Werkzeug/2.0.2 Python/3.9.2
-Service Info: Host: goodgames.htb`
+Service Info: Host: goodgames.htb```
 
 
 **Don't forget to add goodgames.htb to your /etc/hosts !!!**
