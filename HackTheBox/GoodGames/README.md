@@ -18,14 +18,14 @@ Service Info: Host: goodgames.htb
 ```
 
 
-**Don't forget to add goodgames.htb to your /etc/hosts !!!**
+**Don't forget to add goodgames.htb to your /etc/hosts!**
 
 Well, the scan didn't show much, so we begin to poke around the main site. What is interesting (for hackers, obviously...) is the login form. We need to provide email and password to be logged into our account. At first, I spend some time poking around with JWT tokens - but it was not the correct way of thinking. I gave up on trying to bruteforce/guess admin's password, as for logging we were using email address, which I didn't know (at this point). After looking up other writeups, it turned out that I should have tried the infamous **SQL INJECTION**. Apparently, even though we had to provide email address in loging form, if we used typical SQL injection payload `email=admin' or 1=1 -- -` we still got logged in as admin (sick!). Now that's a surprise! If we were able to exploit the `email` field with our famous payload, we could test it using tool called `sqlmap`. All we had to do was to intercept our burp request during loging, save it as `request.txt` and then use command like `sqlmap -r request.txt`. This results in a dumped database with usernames and password hashes. Bingo! Now we just need to crack the admin's password and we are ready to go!
 
 I used one of my favourite sites for cracking common passwords: https://crackstation.net. It turns out that our admin uses a really weak password: "superadministrator". This is pathetic... But now we are able to log into the admin's account and try to find a way to mess things up. 
 In admin's panel, we can find info about another site called `internal-administration.goodgames.htb`.  
   
-**Remember to add this address to your /etc/hosts !!!**  
+**Remember to add this address to your /etc/hosts!**  
   
 After visiting this page, we are greeted by a big login form called "_Flask Volt_" (Flask is a python web application framework). I wonder... What if our admin was really lazy and used the same password couple of times?  
 Bingo!  
@@ -35,7 +35,7 @@ Here comes the tricky part. I want to be completely honest with you, I lost my p
 
 In the `settings` section, you are able to set you username, date of birth and phone number. And remember this one thing:  
   
-**IF YOU ARE PENTESTING A PYTHON ENVIRONMENT, THERE IS A BIG CHANCE OF _SSTI_ VULNERABILITY**.  
+**REMEMBER, IF YOU ARE PENTESTING A PYTHON ENVIRONMENT, THERE IS A BIG CHANCE OF _SSTI_ VULNERABILITY!**.  
   
 I'm not even a pentester, but that's how life works. If you see python - it will be either SSTI or some other deserialization. But now, when I am writing this writeup, it is easy to say I guess...
 Well, back to the point. If you try a payload in a name field to be `{{7*7}}`, the generated name will be `49`. That's nice, we found vulnerability. Now you need to identify the Template Engine. There is a couple of ways to do this, but I really like this article: https://book.hacktricks.xyz/pentesting-web/ssti-server-side-template-injection
@@ -50,7 +50,7 @@ But what has happened?? Why are we root immediately?? Why is there no root.txt f
 
 The last part of our journey is getting root access.
   
-**REMEMBER, WHEN YOU HAVE ACCESS TO A DOCKER CONTAINER WITH A MOUNTED FILESYSTEM OR ABILITY TO MOUNT, THERE IS A HIGH POSSIBILITY THAT YOU WILL NEED TO CLONE A BINARY LIKE /BIN/BASH AND GIVE IT THE SUID BIT OR DO SOMETHING VERY SIMMILAR**. 
+**REMEMBER, WHEN YOU HAVE ACCESS TO A DOCKER CONTAINER WITH A MOUNTED FILESYSTEM OR ABILITY TO MOUNT, THERE IS A HIGH POSSIBILITY THAT YOU WILL NEED TO CLONE A BINARY LIKE /BIN/BASH AND GIVE IT THE SUID BIT OR DO SOMETHING VERY SIMMILAR!**. 
   
 So that's exactly what we will do! Let's go to the augustus home directory and copy the /bin/bash binary (`cp /bin/bash .`). Now let's use `logout` to go back to docker container. Look at this! There is our copied bash binary and we have root access and complete freedom in modyfing it's permissions! So nw, let's change the owner of this binary: `chown root:root bash`, then let's add SUID bit: `chmod s+u bash`. Now let's log again as augustus and if we did everything perfectly, you should be able to execute bash binary from augustus home directory with elevated privileges. If you execute `./bash -p`, you should become _root_.  
 
