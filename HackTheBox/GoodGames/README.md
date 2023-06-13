@@ -25,7 +25,7 @@ Well, the scan didn't show much, so we begin to poke around the main site. What 
 I used one of my favourite sites for cracking common passwords: https://crackstation.net. It turns out that our admin uses a really weak password: "superadministrator". This is pathetic... But now we are able to log into the admin's account and try to find a way to mess things up. 
 In admin's panel, we can find info about another site called `internal-administration.goodgames.htb`.  
 **Remember to add this address to your /etc/hosts !!!**  
-After visiting this page, we are greeted by a big login form called "_Flask Volt_".**_Remember that Flask is a web application framework written in python!_** I wonder... What if our admin was really lazy and used the same password couple of times?  
+After visiting this page, we are greeted by a big login form called "_Flask Volt_" (Flask is a python web application framework). I wonder... What if our admin was really lazy and used the same password couple of times?  
 Bingo!  
 We can log into the app!  
 
