@@ -52,7 +52,7 @@ is the answer for the last question:
 ```
 Who is going on vacation? Please provide their email address. leshy@midsummer.corp.local
 ```
-That's all for challenge #3!
+Don't forget to download the `fernflower_flag1.png` file that we will need later! That's all for challenge #3 :)
 
 # 4. Puck
 
