@@ -132,8 +132,7 @@ But, when I tried to send request with additional parameters like `loginName:bor
 
 This is the moment when I decided to inspect the source code of application. To find interesting parts of big source code, I used the error message and `grep` command like this: `grep -r "Blocked by web application firewall." www`. The part that is interesting for me is stored in 
 `www/apps/settings/lib/Controller/AuthSettingsController.php`. The code that is responsible for vulnerability looks like this:
-```
-php
+```php
 public function create($name, $loginName) {
 		$ALLOWED_USERS = ['boruta'];
 
@@ -203,8 +202,7 @@ public function create($name, $loginName) {
 
 I know, I know, it looks complicated - but don't worry! I will explain everything :)  
 Let's focus on this part:
-```
-php
+```php
 if (in_array($loginName, $ALLOWED_USERS) && !is_null($loginName)){
 			return new JSONResponse([
 				'error' => "Blocked by web application firewall.",
