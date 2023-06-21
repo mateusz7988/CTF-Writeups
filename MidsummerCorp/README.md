@@ -59,5 +59,29 @@ The answers for the questions are listed below:
 ```
 What is the length of the MFA code used in the application? Enter a numeric value in your answer.  6
 What is the content of the file Fern_flower_ritual_shard2.txt in Leshy's account? Midsummer_Corp{Fo11ow_Th3_Wi1l_o'_7h3_W1sps}
+```
+# 5. Baba Yaga
+This challenge relies on "Rate limiting bypass". In the description of the challenge we are given some examples of how we can exploit this vulnerability. We can use Burpsuite to intercept the requests and add one of the following headers:
+```
+X-Originating-IP: 127.0.0.1 
+
+X-Forwarded-For: 127.0.0.1 
+
+X-Remote-IP: 127.0.0.1 
+
+X-Remote-Addr: 127.0.0.1 
+
+X-Client-IP: 127.0.0.1 
+
+X-Host: 127.0.0.1 
+
+X-Forwared-Host: 127.0.0.1
+```
+When we tried accessing the endpoint for resetting password, the header that helped us access this page is the answer for the first question:
+```
+Which HTTP header was used to bypass throttling?  X-Forwarded-For
+What is the endpoint path for resetting a password? /lostpassword/reset/form/<TOKEN>/<USER>
+```
+
 
 
