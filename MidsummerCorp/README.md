@@ -220,5 +220,12 @@ This code checks if value passed in `loginName` is equal to `boruta` using the `
 ![image](https://github.com/mateusz7988/CTF-Writeups/assets/108484575/11ad4b38-c159-4951-997a-809e7bcd8b67)
 
 Now, when we download the `Nextcloud` app, we will be able to log in as device (and not as the browser) using the `token` value.
-After connecting with 
+After connecting with `Nextcloud` app, we get access to all files from the Boruta's account. If we open the `Fern_flower_ritual_shard4.txt` file, we get the answer to the last question:
+```
+What is the content of the Fern_flower_ritual_shard4.txt file in Boruta's account? Midsummer_Corp{L3ave_an_0ff3r1ng_f0r_th3_spir1ts}
+```
+Again, don't forget to grab the `fernflower_flag5.png` file as we will need it later!
+
+# 7. Twardowski
+
 
