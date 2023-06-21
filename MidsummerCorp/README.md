@@ -46,15 +46,18 @@ How long is Puck's password? 16
 What is the content of the file Fern_flower_ritual_shard1.txt in Puck's account? Midsummer_Corp{W@it_unt!1_m1dn1ght_0n_th3_Summ3r_Solst1c3}
 ```
 To answer the final question, we need to see that at the bottom of our files list is written: `2 folders and 25 files  (including 1 hidden)`. Well we need to find the hidden folder!
-The first thing to try is to simply visit the Settings and we are greeted with big square with the name `show hidden files`. Now, let's just click on it
-and we will have access to hidden `.mail` folder with `inbox.mbox` file inside. After downloading it and reading through emails, we can see that there 
+The first thing to try is to simply visit the File Settings and we will be greeted with the a big square with the name `show hidden files`. Now, let's just click on it and we will have access to hidden `.mail` folder with `inbox.mbox` file inside. After downloading it and reading through emails, we can see that there 
 is the answer for the last question:
 ```
 Who is going on vacation? Please provide their email address. leshy@midsummer.corp.local
 ```
 Don't forget to download the `fernflower_flag1.png` file that we will need later! That's all for challenge #3 :)
 
-# 4. Puck
-
+# 4. Leshy
+This part mainly focuses on MFA (multi-factor authentication). We will need to abuse it. In the previous challenge, we got access to leshy's password but when we try to log in to his account, we will need to provide the MFA code. The first thing to do is to play a bit with the MFA options on the account that we already have access to (Puck). When I tried to switch the MFA on, it showed me this: `Your new TOTP secret is: 234567 `. Well, this number looks suspicious, just as it was not randomly generated but the same for all of the company workers! I downloaded the `Authy` app on my phone and paired it with Midsummer Corp app. Now, when I tried to log in as Leshy, I provided the MFA code that my app generated (that was meant for Puck's authentication) and it worked! We are now logged in as Leshy!  
+The answers for the questions are listed below:
+```
+What is the length of the MFA code used in the application? Enter a numeric value in your answer.  6
+What is the content of the file Fern_flower_ritual_shard2.txt in Leshy's account? Midsummer_Corp{Fo11ow_Th3_Wi1l_o'_7h3_W1sps}
 
 
