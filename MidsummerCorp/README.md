@@ -97,14 +97,128 @@ What is the endpoint path for resetting a password? /lostpassword/reset/form/<TO
 ```
 Normally, we would need to know the \<TOKEN\>, BUT! In the challenge description we have this piece of information: `For example, what if the server does not check the validity of the token at all?` Hmmmm... They do not check validity at all? Let's try this!  
 To reset password, I replaced the \<TOKEN\> value with `please_give_me_lego` and tried to access this endpoint through browser. Remember to intercept this request and add the `X-Forwarded-For: 127.0.0.1`! Without this your request will not be accepted!  
-After reaching this endpoint, we can reset the password and log in as `babayaga` user. Inside the files folder, we can find our flag (both of them actually).
+After reaching this endpoint, we can reset the password and log in as `babayaga` user. Indeed, our \<TOKEN\> value was not checked. Inside the files folder, we can find our flag.
 ```
 What is the content of the Fern_flower_ritual_shard3.txt file in babayaga account? Midsummer_Corp{F1nd_th3_cl34r1ng_w1th_th3_anc13nt_st0n3s}
 ```
-The second one we will need to know the final flag! The part that we are looking for is stored in `fernflower_flag3.png` file :)
+Remember to grab the `fernflower_flag3.png` file :)
 
 # 6. Boruta
 
-This part gave me the most trouble from them all (or at least from the ones that I solved). Challenge 6 relies on `Mass assingment` vulnerability. This should be fun right? 
+This part gave me the most trouble from them all (or at least from the ones that I solved). Challenge 6 relies on `Mass assingment` vulnerability. This should be fun right? Let's try to add a device in our Midsummer Corp app through Settings in the Security section. If we intercept this request with Burpsuite, we get response like this:
+![image](https://github.com/mateusz7988/CTF-Writeups/assets/108484575/03e08f64-25fd-47dc-ad38-607e0d020419)
+```
+{
+"token":"XP8De-mNw6d-sQ4XR-44PoQ-oHE7B",
+"loginName":"babayaga",
+"deviceToken":{
+  "id":27,
+  "name":"test",
+  "lastActivity":1687365291,
+  "type":1,
+  "scope":{
+  "filesystem":true
+},
+"canDelete":true,
+"canRename":true}
+}
+```
+The thing that looks interesting is the `loginName:babayaga` key-value pair. This is the answer for the first question:
+```
+ What parameter name assigns the app password to the specific user? loginName
+```
+But, when I tried to send request with additional parameters like `loginName:boruta`, I got an error like this:
+![image](https://github.com/mateusz7988/CTF-Writeups/assets/108484575/d4490c97-694f-4743-95db-c4b96921e3aa)
 
+This is the moment when I decided to inspect the source code of application. To find interesting parts of big source code, I used the error message and `grep` command like this: `grep -r "Blocked by web application firewall." www`. The part that is interesting for me is stored in 
+`www/apps/settings/lib/Controller/AuthSettingsController.php`. The code that is responsible for vulnerability looks like this:
+```
+public function create($name, $loginName) {
+		$ALLOWED_USERS = ['boruta'];
+
+		if (in_array($loginName, $ALLOWED_USERS) && !is_null($loginName)){
+			return new JSONResponse([
+				'error' => "Blocked by web application firewall.",
+			]);
+		}
+
+		if (!in_array(rtrim($loginName), $ALLOWED_USERS) && !is_null($loginName)){
+			return new JSONResponse([
+				'error' => "Account ".$loginName." does not support device tokens.",
+			]);
+		}
+
+		if ($this->checkAppToken()) {
+			return $this->getServiceNotAvailableResponse();
+		}
+
+		try {
+			$sessionId = $this->session->getId();
+		} catch (SessionNotAvailableException $ex) {
+			return $this->getServiceNotAvailableResponse();
+		}
+		if ($this->userSession->getImpersonatingUserID() !== null) {
+			return $this->getServiceNotAvailableResponse();
+		}
+
+		try {
+			$sessionToken = $this->tokenProvider->getToken($sessionId);
+			$loginName2 = $sessionToken->getLoginName();
+			try {
+				$password = $this->tokenProvider->getPassword($sessionToken, $sessionId);
+			} catch (PasswordlessTokenException $ex) {
+				$password = null;
+			}
+		} catch (InvalidTokenException $ex) {
+			return $this->getServiceNotAvailableResponse();
+		}
+
+		if (mb_strlen($name) > 128) {
+			$name = mb_substr($name, 0, 120) . '…';
+		}
+
+		if(is_null($loginName)) {
+			$loginName = $loginName2;
+		}
+		else {
+			$loginName = rtrim($loginName);
+		}
+
+		$token = $this->generateRandomDeviceToken();
+		$deviceToken = $this->tokenProvider->generateToken($token, $loginName, $loginName, $password, $name, IToken::PERMANENT_TOKEN);
+		$tokenData = $deviceToken->jsonSerialize();
+		$tokenData['canDelete'] = true;
+		$tokenData['canRename'] = true;
+
+		$this->publishActivity(Provider::APP_TOKEN_CREATED, $deviceToken->getId(), ['name' => $deviceToken->getName()]);
+
+		return new JSONResponse([
+			'token' => $token,
+			'loginName' => $loginName,
+			'deviceToken' => $tokenData,
+		]);
+	}
+```
+
+I know, I know, it looks complicated - but don't worry! I will explain everything :)  
+Let's focus on this part:
+```
+if (in_array($loginName, $ALLOWED_USERS) && !is_null($loginName)){
+			return new JSONResponse([
+				'error' => "Blocked by web application firewall.",
+			]);
+		}
+
+		if (!in_array(rtrim($loginName), $ALLOWED_USERS) && !is_null($loginName)){
+			return new JSONResponse([
+				'error' => "Account ".$loginName." does not support device tokens.",
+			]);
+		}
+```
+
+This code checks if value passed in `loginName` is equal to `boruta` using the `in_array($loginName, $ALLOWED_USERS)` function. But, the next check is made by using the `rtrim($loginName)`. The `rtrim` function basically just removes trailing spaces from a string. This means, that if we pass `loginName` with value like: `"boruta    "`, it will not be checked by the `in_array` function, as `"boruta" != "boruta     "` AND then, the next check will also not be fulfilled as `!in_array(rtrim("boruta    "), "boruta") is false!!! Then, the value of `loginName` will be assigned normally and we will be able to log in as `boruta` using device:
+![image](https://github.com/mateusz7988/CTF-Writeups/assets/108484575/11ad4b38-c159-4951-997a-809e7bcd8b67)
+
+Now, when we download the `Nextcloud` app, we will be able to log in as device (and not as the browser) using the `token` value.
+After connecting with 
 
