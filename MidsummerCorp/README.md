@@ -60,6 +60,8 @@ The answers for the questions are listed below:
 What is the length of the MFA code used in the application? Enter a numeric value in your answer.  6
 What is the content of the file Fern_flower_ritual_shard2.txt in Leshy's account? Midsummer_Corp{Fo11ow_Th3_Wi1l_o'_7h3_W1sps}
 ```
+Remember to grab the part of the flag stored in the `fernflower_flag2.png` file!
+
 # 5. Baba Yaga
 This challenge relies on "Rate limiting bypass". In the description of the challenge we are given some examples of how we can exploit this vulnerability. We can use Burpsuite to intercept the requests and add one of the following headers:
 ```
@@ -77,11 +79,32 @@ X-Host: 127.0.0.1
 
 X-Forwared-Host: 127.0.0.1
 ```
-When we tried accessing the endpoint for resetting password, the header that helped us access this page is the answer for the first question:
+If we don't add one of these headers, our request will not be accepted with "code 429 Too Many Requests". But now, after we used the `X-Forwarded-For: 127.0.0.1` header we get our beautiful "code 200 OK" :)  
+![image](https://github.com/mateusz7988/CTF-Writeups/assets/108484575/ffd968ea-1278-4a3d-bc78-7a3b1e33421d)
+
+Here you can see the response with parameters:
+```
+{
+"status":"success",
+"success_path":"\/lostpassword\/reset\/form\/\u003CTOKEN\u003E\/\u003CUSER\u003E"
+}
+```
+If we URL-decode the success_path value, we get the answer for another question:
+
 ```
 Which HTTP header was used to bypass throttling?  X-Forwarded-For
 What is the endpoint path for resetting a password? /lostpassword/reset/form/<TOKEN>/<USER>
 ```
+Normally, we would need to know the <TOKEN>, BUT! In the challenge description we have this piece of information: `For example, what if the server does not check the validity of the token at all?` Hmmmm... They do not check validity at all? Let's try this!  
+To reset password, I replaced the <TOKEN> value with `please_give_me_lego` and tried to access this endpoint through browser. Remember to intercept this request and add the `X-Forwarded-For: 127.0.0.1`! Without this your request will not be accepted!  
+After reaching this endpoint, we can reset the password and log in as `babayaga` user. Inside the files folder, we can find our flag (both of them actually).
+```
+What is the content of the Fern_flower_ritual_shard3.txt file in babayaga account? Midsummer_Corp{F1nd_th3_cl34r1ng_w1th_th3_anc13nt_st0n3s}
+```
+The second one we will need to know the final flag! The part that we are looking for is stored in `fernflower_flag3.png` file :)
 
+# 6. Boruta
+
+This part gave me the most trouble from them all (or at least from the ones that I solved). Challenge 6 relies on `Mass assingment` vulnerability. This should be fun right? 
 
 
