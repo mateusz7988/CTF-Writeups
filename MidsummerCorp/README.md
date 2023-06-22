@@ -133,6 +133,7 @@ The thing that looks interesting is the `loginName:babayaga` key-value pair. Thi
  What parameter name assigns the app password to the specific user? loginName
 ```
 But, when I tried to send request with additional parameters like `loginName:boruta`, I got an error like this:
+  
 ![image](https://github.com/mateusz7988/CTF-Writeups/assets/108484575/d4490c97-694f-4743-95db-c4b96921e3aa)
   
 This is the moment when I decided to inspect the source code of application. To find interesting parts of big source code, I used the error message and `grep` command like this: `grep -r "Blocked by web application firewall." <source code filename>`. The part that is interesting for me is stored in 
