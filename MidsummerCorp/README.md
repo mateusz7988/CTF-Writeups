@@ -216,7 +216,8 @@ if (in_array($loginName, $ALLOWED_USERS) && !is_null($loginName)){
 		}
 ```
 
-This code checks if value passed in `loginName` is equal to `boruta` using the `in_array($loginName, $ALLOWED_USERS)` function. But, the next check is made by using the `!in_array(rtrim($loginName))`. The `rtrim` function basically just removes trailing spaces from a string. This means, that if we pass `loginName` with value like: `"boruta    "`, it will return false by the `in_array` function, as `"boruta" != "boruta     "` and then, the next check will also not be fulfilled as `!in_array(rtrim("boruta    "), "boruta")` is false (because `!in_array(rtrim("boruta    "), "boruta") ---> !in_array("boruta", "boruta") ---> False)`. Then, the value of `loginName` will be assigned normally:
+This code checks if value passed in `loginName` is equal to `boruta` using the `in_array($loginName, $ALLOWED_USERS)` function. But, the next check is made by using the `!in_array(rtrim($loginName))`. The `rtrim` function basically just removes trailing spaces from a string. This means, that if we pass `loginName` with value like: `"boruta    "`, it will return false by the `in_array` function, as `"boruta" != "boruta     "` and then, the next check will also not be fulfilled as `!in_array(rtrim("boruta    "), "boruta")` is false  
+(because `!in_array(rtrim("boruta    "), "boruta") ---> !in_array("boruta", "boruta") ---> False`). Then, the value of `loginName` will be assigned normally:
 ```php
 return new JSONResponse([
 			'token' => $token,
