@@ -261,3 +261,5 @@ Here, I will paste the partial flag that I managed to find across all of the acc
 ```
 Midsummer_Corp{Thw33_rf_3rr3 <EMPTY> f@!l <EMPTY> }
 ```
+
+I wanted to say once again **big thank you** to the Securing Company! That was one of the best challenges that I participated and I cannot wait to see the writeups of other players :) Hope we will play many more CTFs in the future!
