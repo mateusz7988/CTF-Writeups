@@ -101,8 +101,8 @@ Which HTTP header was used to bypass throttling?  X-Forwarded-For
 What is the endpoint path for resetting a password? /lostpassword/reset/form/<TOKEN>/<USER>
 ```
 Normally, we would need to know the \<TOKEN\>, BUT! In the challenge description we have this piece of information: `For example, what if the server does not check the validity of the token at all?` Hmmmm... They do not check validity at all? Let's try this!  
-To reset password, I replaced the \<TOKEN\> value with `please_give_me_lego` and tried to access this endpoint through browser. Remember to intercept this request and add the `X-Forwarded-For: 127.0.0.1`! Without this your request will not be accepted!  
-After reaching this endpoint, we can reset the password and log in as `babayaga` user. Indeed, our \<TOKEN\> value was not checked. Inside the files folder, we can find our flag.
+To reset password, I replaced the \<TOKEN\> value with `please_give_me_lego` and tried to access this endpoint through browser. My final endpoint looked like this: `http://files.midsummer.corp.local/lostpassword/reset/form/give_me_lego/babayaga`. Remember to intercept this request and add the `X-Forwarded-For: 127.0.0.1`! Without this your request will not be accepted!  
+After reaching this endpoint, we can reset the password and log in as `babayaga` user. Indeed, our \<TOKEN\> value was not checked! Inside the files folder, we can find our flag.
 ```
 What is the content of the Fern_flower_ritual_shard3.txt file in babayaga account? Midsummer_Corp{F1nd_th3_cl34r1ng_w1th_th3_anc13nt_st0n3s}
 ```
