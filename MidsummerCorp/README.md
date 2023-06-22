@@ -228,4 +228,18 @@ Again, don't forget to grab the `fernflower_flag5.png` file as we will need it l
 
 # 7. Twardowski
 
+Unfortunately, I didn't manage to solve this part. I tried to build my own SAML response including attributes like role (sso), alias (twardowski), etc. To do this, I used online tool https://www.samltool.com. I have spent really long time on this and I think I was really close but I had to finish this writeup before the end of the CTF and I simply run out of time. I will paste the answers to all the questions that I did answer below:
+```
+What is the name of the XML entity that contains information about user such as their name, email, roles, etc.? Assertion
+What is the name of a party that authenticates users and issues SAML assertions? Identity Provider
+What should be the value of Content-Type header when sending the SAML Response? application/x-www-form-urlencoded
+What should be Destination set to in SAML Response? http://files.midsummer.corp.local/apps/user_saml/saml/acs
+What should be Issuer set to in SAML Response? http://idp.midsummer.corp
+```
+I think, that the problem with my SAML request is that it wasn't signed. I tried to sign it using the tool mentioned before but I couldn't figure it out. I will for sure focus on understanding SAML further and will look forward to other CTFs from the Securing company as this one gave me a lot of fun and a made me learn lot of new skills! 
 
+# 9. End of the journey
+Here, I will paste the partial flag that I managed to find across all of the accounts:
+```
+
+```
