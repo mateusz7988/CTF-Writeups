@@ -83,7 +83,8 @@ X-Host: 127.0.0.1
 
 X-Forwared-Host: 127.0.0.1
 ```
-If we don't add one of these headers, our request will not be accepted, and we will be greeted with "code 429 Too Many Requests". But now, after we added the `X-Forwarded-For: 127.0.0.1` header to our intercepted request, we got our beautiful "code 200 OK" :)  
+If we don't add one of these headers, our request will not be accepted, and we will be greeted with "code 429 Too Many Requests". But now, after we added the `X-Forwarded-For: 127.0.0.1` header to our intercepted request, we got our beautiful "code 200 OK" :)
+  
 ![image](https://github.com/mateusz7988/CTF-Writeups/assets/108484575/ffd968ea-1278-4a3d-bc78-7a3b1e33421d)
   
   
@@ -111,7 +112,9 @@ Remember to grab the `fernflower_flag3.png` file :)
 # 6. Boruta
 
 This part gave me the most trouble from them all (or at least from the ones that I solved). Challenge 6 relies on `Mass assingment` vulnerability. This should be fun right? Let's try to add a device in our Midsummer Corp app through Settings in the Security section. If we intercept this request with Burpsuite, we get response like this:
+  
 ![image](https://github.com/mateusz7988/CTF-Writeups/assets/108484575/03e08f64-25fd-47dc-ad38-607e0d020419)
+  
 ```
 {
 "token":"XP8De-mNw6d-sQ4XR-44PoQ-oHE7B",
@@ -231,8 +234,9 @@ return new JSONResponse([
 		]);
 ```
 And then, we will be able to log in as `boruta` using device log in method:
+  
 ![image](https://github.com/mateusz7988/CTF-Writeups/assets/108484575/11ad4b38-c159-4951-997a-809e7bcd8b67)
-
+  
 Now, when we download the `Nextcloud` app, we will be able to log in as device (and not as the browser) using the `token` value.
 After connecting with `Nextcloud` app, we get access to all files from the Boruta's account. If we open the `Fern_flower_ritual_shard4.txt` file, we get the answer to the last question:
 ```
