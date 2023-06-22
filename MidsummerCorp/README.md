@@ -20,7 +20,7 @@ List of contents:
 The first challenge doesn't really require any knowledge, so let's just mark it down as completed and move to the next one!
   
 # 2. Midsummer Corp
-Now in this challenge, the hint says to inspect the Javascript carefully. So let's do this! I started inspecting all the available JS and finally
+Now in this challenge, the hint says to inspect the Javascript carefully. So let's do this! I started inspecting all the available JS using the browser developer tools and finally
 stumbled upon this line in /apps/user_saml/saml/selectUserBackEnd:  
   
 `var _theme={"entity":"Midsummer Corp","name":"Midsummer Corp","productName":"Nextcloud","title":"Midsummer Corp","baseUrl":"https:\/\/files.midsummer.corp.local","syncClientUrl":"https:\/\/nextcloud.com\/install\/#install-clients","docBaseUrl":"https:\/\/docs.nextcloud.com","docPlaceholderUrl":"https:\/\/docs.nextcloud.com\/server\/26\/go.php?to=PLACEHOLDER","slogan":"a safe home for all your flowers","logoClaim":"","folder":""}`
@@ -29,6 +29,10 @@ There, we can see key-value pair as `{baseUrl":"https:\/\/files.midsummer.corp.l
 
 Bingo! That is our answer!
 
+```
+What is the application's base URL? files.midsummer.corp.local
+```
+
 # 3. Puck
 In this challenge, there are some theoretical questions and some practical. Let's now answer all the questions that we can, and the we will think about the rest.
 ```
@@ -36,7 +40,7 @@ What do we call the process of verifying the identity of a user or system? Authe
 How do we call the process of verifying that a user has access to a particular resource? Authorization
 ```
 Aaand that would be the end of the questions that we know the answer for (for now). The next questions is: How long is Puck's password? That probably means
-that his password is stored somewhere and we don't need to bruteforce it. I really like to just open the JS and look for key-words like: "default", "password",
+that his password is stored somewhere and that we don't need to bruteforce it or play with any other login vulnerability like SQL injection. I really like to just open the JS files in browser developer tools and look for key-words like: "default", "password",
 "admin", "pass", etc. So that's exactly what we will do! Let's look for "default". After couple of tries, in the same file as before (/apps/user_saml/saml/selectUserBackEnd) we are able to find
 key-value pair `{"defaultPassword":"sfLfSNYavTD4PL4Z"}`. Well that's unfortunate! But only for the company that we are trying to hack :)
 Now we can try to log in using this password and guess what? It is successful!  
@@ -45,16 +49,16 @@ Let's log in and answer the questions:
 How long is Puck's password? 16
 What is the content of the file Fern_flower_ritual_shard1.txt in Puck's account? Midsummer_Corp{W@it_unt!1_m1dn1ght_0n_th3_Summ3r_Solst1c3}
 ```
-To answer the final question, we need to see that at the bottom of our files list is written: `2 folders and 25 files  (including 1 hidden)`. Well we need to find the hidden folder!
-The first thing to try is to simply visit the File Settings and we will be greeted with the a big square with the name `show hidden files`. Now, let's just click on it and we will have access to hidden `.mail` folder with `inbox.mbox` file inside. After downloading it and reading through emails, we can see that there 
-is the answer for the last question:
+To answer the final question, we need to see that at the bottom of our files list is written: `2 folders and 25 files  (including 1 hidden)`. Well, we need to find the hidden folder!
+The first thing to try is to simply visit the File Settings and we will be greeted with a big square with the name `show hidden files`. Now, let's just click on it and we will have access to hidden `.mail` folder with `inbox.mbox` file inside. After downloading it and reading through emails, we can see that there 
+lies the answer for the last question:
 ```
 Who is going on vacation? Please provide their email address. leshy@midsummer.corp.local
 ```
-Don't forget to download the `fernflower_flag1.png` file that we will need later! That's all for challenge #3 :)
+Don't forget to download the `fernflower_flag1.png` file as we will need it later! That's all for challenge #3 :)
 
 # 4. Leshy
-This part mainly focuses on MFA (multi-factor authentication). We will need to abuse it. In the previous challenge, we got access to leshy's password but when we try to log in to his account, we will need to provide the MFA code. The first thing to do is to play a bit with the MFA options on the account that we already have access to (Puck). When I tried to switch the MFA on, it showed me this: `Your new TOTP secret is: 234567 `. Well, this number looks suspicious, just as it was not randomly generated but the same for all of the company workers! I downloaded the `Authy` app on my phone and paired it with Midsummer Corp app. Now, when I tried to log in as Leshy, I provided the MFA code that my app generated (that was meant for Puck's authentication) and it worked! We are now logged in as Leshy!  
+This part mainly focuses on MFA (multi-factor authentication). We will need to abuse it. In the previous challenge, we got access to leshy's password but when we try to log in to his account, we need to provide the MFA code. The first thing to do is to play a bit with the MFA options on the account that we already have access to (Puck). When I tried to switch the MFA on, it showed me this message: `Your new TOTP secret is: 234567`. Well, this number looks suspicious, just as it was not randomly generated, but the same for all of the company workers! I downloaded the `Authy` app on my phone and paired it with Midsummer Corp app using my **TOTP SUPER DUPER SECRET CODE**. Now, when I tried to log in as Leshy, I provided the MFA code that my app generated (that was meant for Puck's authentication) and it worked! We are now logged in as Leshy!  
 The answers for the questions are listed below:
 ```
 What is the length of the MFA code used in the application? Enter a numeric value in your answer.  6
@@ -79,10 +83,11 @@ X-Host: 127.0.0.1
 
 X-Forwared-Host: 127.0.0.1
 ```
-If we don't add one of these headers, our request will not be accepted with "code 429 Too Many Requests". But now, after we used the `X-Forwarded-For: 127.0.0.1` header we get our beautiful "code 200 OK" :)  
+If we don't add one of these headers, our request will not be accepted, and we will be greeted with "code 429 Too Many Requests". But now, after we added the `X-Forwarded-For: 127.0.0.1` header to our intercepted request, we got our beautiful "code 200 OK" :)  
 ![image](https://github.com/mateusz7988/CTF-Writeups/assets/108484575/ffd968ea-1278-4a3d-bc78-7a3b1e33421d)
-
-Here you can see the response with parameters:
+  
+  
+Here you can see the parameters included in the response body:
 ```
 {
 "status":"success",
@@ -129,8 +134,8 @@ The thing that looks interesting is the `loginName:babayaga` key-value pair. Thi
 ```
 But, when I tried to send request with additional parameters like `loginName:boruta`, I got an error like this:
 ![image](https://github.com/mateusz7988/CTF-Writeups/assets/108484575/d4490c97-694f-4743-95db-c4b96921e3aa)
-
-This is the moment when I decided to inspect the source code of application. To find interesting parts of big source code, I used the error message and `grep` command like this: `grep -r "Blocked by web application firewall." www`. The part that is interesting for me is stored in 
+  
+This is the moment when I decided to inspect the source code of application. To find interesting parts of big source code, I used the error message and `grep` command like this: `grep -r "Blocked by web application firewall." <source code filename>`. The part that is interesting for me is stored in 
 `www/apps/settings/lib/Controller/AuthSettingsController.php`. The code that is responsible for vulnerability looks like this:
 ```php
 public function create($name, $loginName) {
@@ -216,8 +221,7 @@ if (in_array($loginName, $ALLOWED_USERS) && !is_null($loginName)){
 		}
 ```
 
-This code checks if value passed in `loginName` is equal to `boruta` using the `in_array($loginName, $ALLOWED_USERS)` function. But, the next check is made by using the `!in_array(rtrim($loginName))`. The `rtrim` function basically just removes trailing spaces from a string. This means, that if we pass `loginName` with value like: `"boruta    "`, it will return false by the `in_array` function, as `"boruta" != "boruta     "` and then, the next check will also not be fulfilled as `!in_array(rtrim("boruta    "), "boruta")` is false  
-(because `!in_array(rtrim("boruta    "), "boruta") ---> !in_array("boruta", "boruta") ---> False`). Then, the value of `loginName` will be assigned normally:
+This code checks if value passed in `loginName` is equal to `boruta` using the `in_array($loginName, $ALLOWED_USERS)` function. But, the next check is made by using the `!in_array(rtrim($loginName), $ALLOWED_USERS)`. The `rtrim` function basically just removes trailing spaces from a string. This means, that if we pass `loginName` with value like: `"boruta    "`, it will return false by the `in_array` function, as `"boruta" != "boruta     "` and then, the next check will also return false (because `!in_array(rtrim("boruta    "), "boruta") ---> !in_array("boruta", "boruta") ---> !True ---> False`). Then, the value of `loginName` will be assigned normally:
 ```php
 return new JSONResponse([
 			'token' => $token,
@@ -225,7 +229,7 @@ return new JSONResponse([
 			'deviceToken' => $tokenData,
 		]);
 ```
-And then, we will be able to log in as `boruta` using device:
+And then, we will be able to log in as `boruta` using device log in method:
 ![image](https://github.com/mateusz7988/CTF-Writeups/assets/108484575/11ad4b38-c159-4951-997a-809e7bcd8b67)
 
 Now, when we download the `Nextcloud` app, we will be able to log in as device (and not as the browser) using the `token` value.
