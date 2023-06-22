@@ -250,5 +250,5 @@ I think, that the problem with my SAML request is that it wasn't signed. I tried
 # 9. End of the journey
 Here, I will paste the partial flag that I managed to find across all of the accounts:
 ```
-
+Midsummer_Corp{Thw33_rf_3rr3 <EMPTY> f@!l <EMPTY> }
 ```
